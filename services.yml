@@ -1,0 +1,17 @@
+# Main Services
+services:
+  # RequestFactory Class
+  request:
+    factory: ['Core\Factory\RequestFactory', 'create']
+  # RouterFactory Class
+  router:
+    factory: ['Core\Factory\RouterFactory', 'create']
+  # TemplateFactory Class
+  template:
+    factory: ['Core\Factory\TemplateFactory', 'create']
+  # SessionFactory Class
+  session:
+    factory: ['Core\Factory\SessionFactory', 'create']
+  # DatabaseFactory Class
+  database:
+    factory: ['Core\Factory\DatabaseFactory', 'create']

@@ -1,0 +1,5 @@
+# Directories Configuration Acccessible via \Core\Config::get('configfile.configname')
+
+root_dir: !php/const:ROOT_PATH    # base dir
+cache_dir: var/cache              # cache dir
+resources_dir: resources          # resources dir e.g views

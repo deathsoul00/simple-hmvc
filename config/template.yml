@@ -1,0 +1,14 @@
+# Mustache Template Configuration
+# see: https://github.com/bobthecow/mustache.php/wiki#constructor-options
+
+template_class_prefix: __Mustache_ # Template Class prefix
+cache_dir: var/cache/templates     # where cache will be stored
+cache_lambda_templates: true       # cache lambda templates
+templates_path: views              # default templates path
+partial_templates_path: views      # default partial templates path
+charset: ISO-8859-1                # supported charset of the engine
+strict_callables: true             # Only treat Closure instances and invokable classes as callable
+
+# loader options
+options:
+  extension: .html

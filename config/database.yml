@@ -1,0 +1,14 @@
+# Database Configuration
+# see: https://docs.zendframework.com/zend-db/adapter/
+
+driver: 'Mysqli'                     # Database Driver to be use Mysqli, Sqlsrv, Pdo_Sqlite, Pdo_Mysql, Pdo
+database: 'online_exam_v2_db'           # Database name
+table_prefix: ''                        # Table prefix if has
+username: 'root'                        # Database server username
+password: ''                            # Database Server password
+hostname: 'localhost'                   # Database Hostname
+port: 3306                              # Database server connection port default '3306'
+charset: 'utf8'                         # Database charset default 'utf8'
+
+options:
+  return_type: array_object                    # define whether should be return as array or array_object
