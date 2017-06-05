@@ -16,20 +16,6 @@ abstract class AbstractController
     private $container;
 
     /**
-     * main template layout filename to be loaded
-     *
-     * @var string
-     */
-    private $layout = '';
-
-    /**
-     * a specific template filename to be loaded
-     *
-     * @var string
-     */
-    private $template = '';
-
-    /**
      * class constructor
      *
      * @param Container $container
@@ -56,7 +42,7 @@ abstract class AbstractController
      */
     public function getLayout()
     {
-        return $this->layout;
+        return $this->getContainer()->get('template')->getAssignedVar('_layout');
     }
 
     /**
@@ -66,7 +52,7 @@ abstract class AbstractController
      */
     public function getTemplate()
     {
-        return $this->template;
+        return $this->getContainer()->get('template')->getAssignedVar('_template');
     }
 
     /**
@@ -76,7 +62,7 @@ abstract class AbstractController
      */
     public function setLayout($layout)
     {
-        $this->layout = $layout;
+        $this->getContainer()->get('template')->assignVar('_layout', $layout);
     }
 
     /**
@@ -86,6 +72,6 @@ abstract class AbstractController
      */
     public function setTemplate($template)
     {
-        $this->template = $template;
+        $this->getContainer()->get('template')->assignVar('_template', $template);
     }
 }

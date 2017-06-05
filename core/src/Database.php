@@ -1,9 +1,10 @@
 <?php
 namespace Core;
 
-use Zend\Db\Adapter\Adapter as ZendAdapter;
+use Core\Exception\LogicException;
+use Core\Exception\InvalidArgumentException;
 
-class Database extends ZendAdapter
+class Database extends \Zend\Db\Adapter\Adapter
 {
     /**
      * transform placeholders to its proper value
@@ -42,7 +43,7 @@ class Database extends ZendAdapter
 
         if (preg_match_all("/$patterns/", $query, $matches)) {
             if (count($matches[0]) !== count($parameters)) {
-                throw new \LogicException(sprintf('Number of placeholder does not match the number of parameters given, %d given', count($parameters)));
+                throw new LogicException(sprintf('Number of placeholder does not match the number of parameters given, %d given', count($parameters)));
             } elseif (!count($matches[0])) {
                 return $query;
             }
@@ -56,13 +57,13 @@ class Database extends ZendAdapter
                 $replace = $this->getPlatform()->quoteValue($parameters[$cursor]);
             } elseif ($match[0] == '?n') {
                 if (!is_array($parameters[$cursor])) {
-                    throw new \InvalidArgumentException(sprintf('Placeholder ?n only accepts array as datatype, %s given', gettype($parameters[$cursor])));
+                    throw new InvalidArgumentException(sprintf('Placeholder ?n only accepts array as datatype, %s given', gettype($parameters[$cursor])));
                 }
                 $parameter = array_map('intval', $parameters[$cursor]);
                 $replace = implode(',', $parameter);
             } elseif ($match[0] == '?a') {
                 if (!is_array($parameters[$cursor])) {
-                    throw new \InvalidArgumentException(sprintf('Placeholder ?s only accepts array as datatype, %s given', gettype($parameters[$cursor])));
+                    throw new InvalidArgumentException(sprintf('Placeholder ?s only accepts array as datatype, %s given', gettype($parameters[$cursor])));
                 }
                 $parameter = array_map(function($parameter) {
                     return $this->getPlatform()->quoteValue($parameter);
@@ -72,7 +73,7 @@ class Database extends ZendAdapter
                 $replace = $this->getPlatform()->quoteValue($parameters[$cursor]);
             } elseif ($match[0] == '?v') {
                 if (!is_array($parameters[$cursor])) {
-                    throw new \InvalidArgumentException(sprintf('Placeholder ?v only accepts array as datatype, %s given', gettype($parameters[$cursor])));
+                    throw new InvalidArgumentException(sprintf('Placeholder ?v only accepts array as datatype, %s given', gettype($parameters[$cursor])));
                 }
                 $fields = [];
                 $values = [];
@@ -83,7 +84,7 @@ class Database extends ZendAdapter
                 $replace = sprintf('(%s) VALUES (%s)', implode(',', $fields), implode(',', $values));
             } elseif ($match[0] == '?u') {
                 if (!is_array($parameters[$cursor])) {
-                    throw new \InvalidArgumentException(sprintf('Placeholder ?u only accepts array as datatype, %s given', gettype($parameters[$cursor])));
+                    throw new InvalidArgumentException(sprintf('Placeholder ?u only accepts array as datatype, %s given', gettype($parameters[$cursor])));
                 }
                 $replace = 'SET ';
                 foreach ($parameters[$cursor] as $field => $value) {
@@ -91,7 +92,7 @@ class Database extends ZendAdapter
                 }
             } elseif ($match[0] == '?p') {
                 if (!is_string($parameters[$cursor])) {
-                    throw new \InvalidArgumentException(sprintf('Placeholder ?p only accepts string as datatype, %s given', gettype($parameters[$cursor])));
+                    throw new InvalidArgumentException(sprintf('Placeholder ?p only accepts string as datatype, %s given', gettype($parameters[$cursor])));
                 }
                 $replace = $parameters[$cursor];
             }

@@ -10,6 +10,7 @@ class HomeController extends AbstractController
     {
         $this->setTemplate('home');
         $this->setLayout('index');
+        echo Registry::get('request')->request->get('sample');
         Registry::get('template')->assignVar('user', 'John Doe');
     }
 }

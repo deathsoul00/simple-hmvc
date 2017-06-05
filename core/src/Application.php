@@ -2,8 +2,10 @@
 namespace Core;
 
 use Core\Config;
+use Core\Module;
 use Core\Registry;
 use Symfony\Component\Config\FileLocator;
+use Core\Exception\ClassNotFoundException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
@@ -49,18 +51,20 @@ class Application
             unset($route_details['_route']);
 
             if (!class_exists($controller)) {
-                throw new \Core\Exception\ClassNotFoundException(sprintf('%s controller not found', $controller));
+                throw new ClassNotFoundException(sprintf('%s controller not found', $controller));
             }
 
             // initialize controller
             $controller = new $controller(Registry::getContainer());
 
             // reserved for pre-controller
+            Module::preDispatch(get_class($controller), $method, $route_details);
 
             // call method of the class
             $response = call_user_func_array([$controller, $method], $route_details);
 
             // reserved for post controller
+            Module::postDispatch(get_class($controller), $method, $route_details);
 
             $vars = Registry::get('template')->getAssignedVars();
             $content = Registry::get('template')->render($controller->getTemplate(), $vars);
