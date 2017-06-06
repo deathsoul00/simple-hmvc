@@ -2,6 +2,7 @@
 namespace App\Controllers;
 
 use Core\Registry;
+use Core\Module;
 use Core\AbstractController;
 
 class HomeController extends AbstractController
@@ -11,6 +12,12 @@ class HomeController extends AbstractController
         $this->setTemplate('home');
         $this->setLayout('index');
         echo Registry::get('request')->request->get('sample');
+        $a = 'aa';
+        $b = 'cc';
+        Module::hook('sample', $a, $b);
+        
+        var_dump($a, $b);
+
         Registry::get('template')->assignVar('user', 'John Doe');
     }
 }

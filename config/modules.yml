@@ -1,3 +1,5 @@
 sample:
   position: 1
   namespace: App\Modules\Sample
+  hooks:
+    sample: Sample@sampleHook
