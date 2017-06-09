@@ -9,7 +9,7 @@ class HomeController extends AbstractController
 {
     public function index()
     {
-        $this->setTemplate('home');
+        $this->setTemplate('home.html');
         $this->setLayout('index');
         echo Registry::get('request')->request->get('sample');
         $a = 'aa';

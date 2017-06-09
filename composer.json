@@ -20,6 +20,7 @@
         "symfony/yaml": "^3.3",
         "mustache/mustache": "^2.11",
         "aura/session": "^2.1",
-        "zendframework/zend-db": "^2.8"
+        "zendframework/zend-db": "^2.8",
+        "twig/twig": "~1.0"
     }
 }

@@ -2,7 +2,7 @@
 namespace Core\Factory;
 
 use Core\Config;
-use Core\Template;
+use Core\Template\TemplateEngineInterface;
 
 /**
  * creates the Template engine of this framework
@@ -15,21 +15,20 @@ class TemplateFactory implements FactoryInterface
     public static function create()
     {
         // configurations
-        $configuration = Config::get('template');
-        $options = @$configuration['options'] ?: [];
-        $base_dir = Config::get('paths.resources_dir');
+        $configurations = Config::get('template');
+        $engine_name = $configurations['engine'];
 
-        // attach main template loader
-        $configuration['loader'] = new \Mustache_Loader_FilesystemLoader("$base_dir/$configuration[templates_path]/", $options);
-        // attach partial template loader
-        $configuration['partials_loader'] = new \Mustache_Loader_FilesystemLoader("$base_dir/$configuration[partial_templates_path]/", $options);
+        $engine = $configurations[$engine_name];
+        $class = new $engine['class'];
 
-        // removed unnecessary configuration
-        unset($configuration['templates_path']);
-        unset($configuration['partial_templates_path']);
-        unset($configuration['options']);
+        if (!$class instanceOf TemplateEngineInterface) {
+            throw new \Core\Exception\RuntimeException(sprintf(
+                '%s engine class must be an instance of Core\\Template\\TemplateEngineInterface, %s given',
+                get_class($class),
+                get_class($class)
+            ));
+        }
 
-        // return instance of \Mustache_Engine
-        return new Template($configuration);
+        return $class->initialize($engine['options']);
     }
 }

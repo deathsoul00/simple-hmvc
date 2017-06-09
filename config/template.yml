@@ -1,14 +1,38 @@
+# Template Configuration
+
+# Default engine is Twig Template
+# see: https://twig.sensiolabs.org/doc/2.x/api.html for options
+twig:
+  class: Core\Template\TwigEngine
+  options:
+    debug: true
+    charset: utf-8
+    base_template_class: Twig_Template
+    cache: var/cache/templates
+    template_dir: resources/views
+    strict_variables: false
+    optimizations: 0
+
+    # register custom Tags/Token Parsers
+    token_parsers:
+      hook: Core\Template\TokenParser\Hook
+
 # Mustache Template Configuration
 # see: https://github.com/bobthecow/mustache.php/wiki#constructor-options
+mustache:
+  class: Core\Template\MustacheEngine
+  options:
+    template_class_prefix: __Mustache_           # Template Class prefix
+    cache_dir: var/cache/templates               # where cache will be stored
+    cache_lambda_templates: true                 # cache lambda templates
+    templates_path: resources/views              # default templates path
+    partial_templates_path: resources/views      # default partial templates path
+    charset: ISO-8859-1                          # supported charset of the engine
+    strict_callables: true                       # Only treat Closure instances and invokable classes as callable
 
-template_class_prefix: __Mustache_ # Template Class prefix
-cache_dir: var/cache/templates     # where cache will be stored
-cache_lambda_templates: true       # cache lambda templates
-templates_path: views              # default templates path
-partial_templates_path: views      # default partial templates path
-charset: ISO-8859-1                # supported charset of the engine
-strict_callables: true             # Only treat Closure instances and invokable classes as callable
+    # loader options
+    options:
+      extension: .html # Template extension
 
-# loader options
-options:
-  extension: .html
+# Set default framework engine
+engine: twig

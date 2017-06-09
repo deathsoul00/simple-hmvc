@@ -4,6 +4,7 @@ namespace Core;
 use Core\Config;
 use Core\Module;
 use Core\Registry;
+use Core\Template\TemplateEngineInterface;
 use Symfony\Component\Config\FileLocator;
 use Core\Exception\ClassNotFoundException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -66,14 +67,9 @@ class Application
             // reserved for post controller
             Module::postDispatch(get_class($controller), $method, $route_details);
 
-            $vars = Registry::get('template')->getAssignedVars();
-            $content = Registry::get('template')->render($controller->getTemplate(), $vars);
-
-            if ($controller->getLayout()) {
-                $vars['content'] = $content;
-                echo Registry::get('template')->render($controller->getLayout(), $vars);
-            } else {
-                echo $content;
+            // output template
+            if (Registry::get('template') instanceof TemplateEngineInterface) {
+                Registry::get('template')->output();
             }
 
         } catch (\Symfony\Component\Routing\Exception\ResourceNotFoundException $ex) {

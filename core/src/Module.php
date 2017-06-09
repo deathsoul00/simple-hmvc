@@ -28,6 +28,11 @@ abstract class Module
     /**
      * dispatch module controller
      *
+     * @throws Core\Exception\RuntimeException          when namespace is missing in the module config for specific config
+     * @throws Core\Exception\InvalidArgumentException  when controller_name is not a valid string
+     * @throws Core\Exception\InvalidArgumentException  when method is not a valid string
+     * 
+     *
      * @param  string $controller_name       name of the controller to be hook
      * @param  string $method                method called from the main controller
      * @param  string $mode                  pre|post mode of the controller when will occur
@@ -105,9 +110,12 @@ abstract class Module
     /**
      * calls out registered hooks for a specific hook name
      *
+     * @throws Core\Exception\InvalidArgumentException if hook name is not a valid string
+     * @throws Core\Exception\LogicException           if module hook does not contain a valid hook configuration '@' sign
+     *
      * @param  string $hook_name unique hook name
-     * @param  mixed  ...$args   function arguments
-     * 
+     * @param  mixed  &...$args  function arguments
+     *
      * @return int
      */
     public static function hook($hook_name, &...$args)
@@ -155,5 +163,60 @@ abstract class Module
                 }
             }
         }
+    }
+
+    /**
+     * override a template being loaded
+     *
+     * @throws Core\Exception\InvalidArgumentException when template_file is an invalid string
+     * @throws Core\Exception\InvalidArgumentException when base_dir is an invalid string or array
+     *
+     * @param  string       $template_file file name of the template to be overriden
+     * @param  array|string $base_dir      base path(s) where templates are stored
+     *
+     * @return string                filename of the override template else the template file name if no overrides
+     */
+    public static function templateOverride($template_file, $base_dir, $extension = '')
+    {
+        if (!$template_file) {
+            return $template_file;
+        }
+
+        if (!is_string($template_file)) {
+            throw new InvalidArgumentException(sprintf('$template_file must be a string, %s given', gettype($template_file)));
+        }
+
+        if (is_array($base_dir)) {
+
+            foreach ($base_dir as $dir) {
+                $template_file = self::templateOverride($template_file, $dir);
+            }
+
+        } elseif (is_string($base_dir)) {
+
+            if ($modules = self::getModules()) {
+
+                foreach ($modules as $module => $configuration) {
+
+                    $override_template = "modules/$module/overrides/$template_file$extension";
+                    $override_template_full_path = "$base_dir/$override_template";
+
+                    if (file_exists($override_template_full_path)) {
+                        $template_file = $override_template;
+                    }
+                }
+
+                return $template_file;
+            }
+        } else {
+            throw new InvalidArgumentException(sprintf('$base_dir must be an array or string, %s given', gettype($base_dir)));
+        }
+
+        return $template_file;
+    }
+
+    public static function hookTemplate($name, $context, $blocks)
+    {
+        var_dump(func_get_args()); exit;
     }
 }
