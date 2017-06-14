@@ -1,21 +1,29 @@
 <?php
 namespace Core\Template\Node;
 
-use Twig_Node;
 use Twig_Compiler;
+use Twig_Node_Block;
+use Twig_NodeInterface;
 
-class Hook extends Twig_Node
+class Hook extends Twig_Node_Block
 {
-    public function __construct($name, $lineno, $tag = null)
+    public function __construct($name, Twig_NodeInterface $body, $lineno, $tag = null)
     {
-        parent::__construct(array(), array('name' => $name), $lineno, $tag);
+        parent::__construct($name, $body, $lineno, $tag);
     }
 
     public function compile(Twig_Compiler $compiler)
     {
         $compiler
             ->addDebugInfo($this)
-            ->write(sprintf("\\Core\\Module::hookTemplate('%s', \$context, \$blocks);\n", $this->getAttribute('name')))
+            ->write(sprintf("public function block_%s(\$context, array \$blocks = array())\n", $this->getAttribute('name')), "{\n")
+            ->indent()
+        ;
+
+        $compiler
+            ->subcompile($this->getNode('body'))
+            ->outdent()
+            ->write("}\n\n")
         ;
     }
 }

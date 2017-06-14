@@ -3,7 +3,7 @@ namespace Core\Template;
 
 use Core\Registry;
 use Core\Helper\ArrayHelper;
-use Core\Loader\Mustache\TemplateFilesystemLoader;
+use Core\Loader\MustacheTemplateLoader;
 /**
  * Custom Template Class that extends the functionality of \Mustache_Engine Class
  *
@@ -71,9 +71,9 @@ class MustacheEngine implements TemplateEngineInterface
             $options = !empty($config['options']) ? $config['options'] : [];
 
             // attach main template loader
-            $config['loader'] = new TemplateFilesystemLoader("$config[templates_path]/", $options);
+            $config['loader'] = new MustacheTemplateLoader("$config[templates_path]/", $options);
             // attach partial template loader
-            $config['partials_loader'] = new TemplateFilesystemLoader("$config[partial_templates_path]/", $options);
+            $config['partials_loader'] = new MustacheTemplateLoader("$config[partial_templates_path]/", $options);
 
             // removed unnecessary configuration
             unset($config['templates_path']);
@@ -139,9 +139,32 @@ class MustacheEngine implements TemplateEngineInterface
 
         if (!empty($vars['_layout'])) {
             $vars['content'] = $content;
-            echo Registry::get('template')->render($vars['_layout'], $vars);
+            echo $this->render($vars['_layout'], $vars);
         } else {
             echo $content;
         }
+    }
+
+    /**
+     * renders the template
+     * 
+     * @param  string $template_name name of the file to be rendered
+     * @param  array  $variables     array of variables to be assigned
+     * 
+     * @return string                content of the file
+     */
+    public function render($name, array $variables = [])
+    {
+        return $this->engine->render($name, $variables);
+    }
+
+    /**
+     * returns the fs loader of template
+     * 
+     * @return \Core\Loader\TemplateLoaderInterface
+     */
+    public function getLoader()
+    {
+        return $this->engine->getLoader();
     }
 }

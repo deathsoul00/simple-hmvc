@@ -6,18 +6,22 @@ use Twig_Token;
 use Twig_Node_Block;
 use Twig_Node_Print;
 use Twig_Error_Syntax;
+use Twig_TokenParser_Block;
+use Core\Template\Node\Hook as HookBlock;
 
-class Hook extends \Twig_TokenParser_Block
+class Hook extends Twig_TokenParser_Block
 {
     public function parse(Twig_Token $token)
     {
         $lineno = $token->getLine();
         $stream = $this->parser->getStream();
         $name = $stream->expect(Twig_Token::NAME_TYPE)->getValue();
+        $name = sprintf('hook_%s', $name);
         if ($this->parser->hasBlock($name)) {
-            throw new Twig_Error_Syntax(sprintf("The block '%s' has already been defined line %d.", $name, $this->parser->getBlock($name)->getTemplateLine()), $stream->getCurrent()->getLine(), $stream->getSourceContext());
+            throw new Twig_Error_Syntax(sprintf("The hook '%s' has already been defined line %d.", $name, $this->parser->getBlock($name)->getTemplateLine()), $stream->getCurrent()->getLine(), $stream->getSourceContext());
         }
-        $this->parser->setBlock($name, $block = new Twig_Node_Block($name, new Twig_Node(array()), $lineno));
+
+        $this->parser->setBlock($name, $block = new HookBlock($name, new Twig_Node(array()), $lineno));
         $this->parser->pushLocalScope();
         $this->parser->pushBlockStack($name);
 
@@ -27,7 +31,7 @@ class Hook extends \Twig_TokenParser_Block
                 $value = $token->getValue();
 
                 if ($value != $name) {
-                    throw new Twig_Error_Syntax(sprintf('Expected endblock for block "%s" (but "%s" given).', $name, $value), $stream->getCurrent()->getLine(), $stream->getSourceContext());
+                    throw new Twig_Error_Syntax(sprintf('Expected endhook for hook "%s" (but "%s" given).', $name, $value), $stream->getCurrent()->getLine(), $stream->getSourceContext());
                 }
             }
         } else {
@@ -41,7 +45,7 @@ class Hook extends \Twig_TokenParser_Block
         $this->parser->popBlockStack();
         $this->parser->popLocalScope();
 
-        return new \Core\Template\Node\Hook($name, $lineno, $this->getTag());
+        return new \Core\Template\Node\HookReference($name, $lineno, $this->getTag());
     }
 
     public function decideBlockEnd(Twig_Token $token)

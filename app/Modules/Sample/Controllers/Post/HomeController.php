@@ -7,8 +7,5 @@ class HomeController extends \Core\AbstractController
 {
     public function index()
     {
-        echo $this->getTemplate();
-        echo Registry::get('template')->getAssignedVar('user');
-        echo 'post controller';
     }
 }

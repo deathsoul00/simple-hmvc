@@ -1,5 +1,5 @@
 <?php
-namespace Core\Loader\Mustache;
+namespace Core\Loader;
 
 use Core\Module;
 
@@ -8,7 +8,7 @@ use Core\Module;
  *
  * @author Mike Alvarez <michaeljpalvarez@gmail.com>
  */
-class TemplateFilesystemLoader extends \Mustache_Loader_FilesystemLoader
+class MustacheTemplateLoader extends \Mustache_Loader_FilesystemLoader implements TemplateLoaderInterface
 {
     /**
      * template base dir
@@ -62,5 +62,15 @@ class TemplateFilesystemLoader extends \Mustache_Loader_FilesystemLoader
 
         // calls default behavior
         return parent::load($name);
+    }
+
+    /**
+     * returns the base paths of the template
+     * 
+     * @return array
+     */
+    public function getPaths()
+    {
+        return [$this->base_dir];
     }
 }

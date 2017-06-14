@@ -3,7 +3,7 @@ namespace Core\Template;
 
 use Core\Helper\ArrayHelper;
 use Core\Exception\InvalidArgumentException;
-use Core\Loader\Twig\TemplateFilesystemLoader;
+use Core\Loader\TwigTemplateLoader;
 
 class TwigEngine implements TemplateEngineInterface
 {
@@ -64,7 +64,7 @@ class TwigEngine implements TemplateEngineInterface
     public function initialize(array $config)
     {
         if ($this->engine == null) {
-            $fs_loader = new TemplateFilesystemLoader($config['template_dir']);
+            $fs_loader = new TwigTemplateLoader($config['template_dir']);
             $this->engine = new \Twig_Environment($fs_loader, $config);
             
             if (array_key_exists('token_parsers', $config)) {
@@ -122,7 +122,7 @@ class TwigEngine implements TemplateEngineInterface
      */
     public function output()
     {
-        echo $this->engine->render($this->getAssignedVar('_template'), $this->getAssignedVars());
+        echo $this->render($this->getAssignedVar('_template'), $this->getAssignedVars());
     }
 
     public function registerTokenParsers(array $parsers)
@@ -136,4 +136,26 @@ class TwigEngine implements TemplateEngineInterface
         }
     }
 
+    /**
+     * renders the template
+     * 
+     * @param  string $template_name name of the file to be rendered
+     * @param  array  $variables     array of variables to be assigned
+     * 
+     * @return string                content of the file
+     */
+    public function render($name, array $variables = [])
+    {
+        return $this->engine->render($name, $variables);
+    }
+
+    /**
+     * returns the fs loader of template
+     * 
+     * @return \Core\Loader\TemplateLoaderInterface
+     */
+    public function getLoader()
+    {
+        return $this->engine->getLoader();
+    }
 }

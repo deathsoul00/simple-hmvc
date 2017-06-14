@@ -11,13 +11,9 @@ class HomeController extends AbstractController
     {
         $this->setTemplate('home.html');
         $this->setLayout('index');
-        echo Registry::get('request')->request->get('sample');
-        $a = 'aa';
-        $b = 'cc';
-        Module::hook('sample', $a, $b);
-        
-        var_dump($a, $b);
 
         Registry::get('template')->assignVar('user', 'John Doe');
+        Registry::get('template')->assignVar('main', 'John Doe');
+        Registry::get('template')->assignVar('users', ['John Doe', 'Maria Doe']);
     }
 }

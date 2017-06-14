@@ -1,2 +1,18 @@
-{% include 'partials/sidebar.html' %}
 <b>Hi, {{ user }}</b>
+
+<h1>Users</h1>
+<br/>
+<table>
+<tr>
+    <th>Name</th>
+    <th>Name 1</th>
+    <th>Name 2</th>
+{% hook xxxx %}{% endhook %}
+</tr>
+
+{% for user in users %}
+    <tr>
+        {% hook xxx %}<td>{{ user }}</td>{% endhook %}
+    </tr>
+{% endfor %}
+</table>

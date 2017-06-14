@@ -42,4 +42,21 @@ interface TemplateEngineInterface
      * @return void
      */
     public function output();
+
+    /**
+     * renders the template
+     * 
+     * @param  string $template_name name of the file to be rendered
+     * @param  array  $variables     array of variables to be assigned
+     * 
+     * @return string                content of the file
+     */
+    public function render($template_name, array $variables = []);
+
+    /**
+     * returns the fs loader of template
+     * 
+     * @return \Core\Loader\TemplateLoaderInterface
+     */
+    public function getLoader();
 }

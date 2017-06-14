@@ -31,7 +31,7 @@ abstract class Module
      * @throws Core\Exception\RuntimeException          when namespace is missing in the module config for specific config
      * @throws Core\Exception\InvalidArgumentException  when controller_name is not a valid string
      * @throws Core\Exception\InvalidArgumentException  when method is not a valid string
-     * 
+     *
      *
      * @param  string $controller_name       name of the controller to be hook
      * @param  string $method                method called from the main controller
@@ -215,8 +215,84 @@ abstract class Module
         return $template_file;
     }
 
+    /**
+     * check if hook file is exists from modules folder
+     * 
+     * @param  string        $module_name   name of the module
+     * @param  string        $filename      name of the file
+     * @param  array|string  $paths         list of base paths to look for or a string of base path
+     * @param  string        $extension     extension of the file
+     * 
+     * @return boolean|string               returns string if template file is exists else false if not
+     */
+    private static function _isHookFileExists($module_name, $filename, $paths, $extension = '')
+    {
+        $template_file = false;
+        if (is_array($paths)) {
+            foreach ($paths as $path) {
+                $template_file = self::_isHookFileExists($module_name, $filename, $path, $extension);
+                if ($template_file !== false) {
+                    break;
+                }
+            }
+        } else {
+            $tmp_hook_file = "modules/$module_name/hooks/$filename$extension";
+            if (file_exists("$paths/$tmp_hook_file")) {
+                $template_file = $tmp_hook_file;
+            }
+        }
+        return $template_file;
+    }
+
+    /**
+     * template hook allowing to hook a display from modules
+     * 
+     * @param  string $name     hook name
+     * @param  array  $context  list of variables assigned to template
+     * @param  array  $blocks   2 dim array which contains 0 => block name, 1 => instance of \Twig_Template
+     * 
+     * @return void
+     */
     public static function hookTemplate($name, $context, $blocks)
     {
-        var_dump(func_get_args()); exit;
+        if ($name && isset($blocks[$name])) {
+
+            list($template_class, $method_name) = $blocks[$name];
+            $modules = self::getModules();
+            $schemas = ['pre', 'override', 'post'];
+            $base_paths = Registry::get('template')->getLoader()->getPaths();
+            $modules = self::getModules();
+            $filename = substr($name, strlen('hook_'));
+            $extension =  substr($template_class->getTemplateName(), strrpos($template_class->getTemplateName(), '.'));
+            $pre_content = '';
+            $override_content = '';
+            $post_content = '';
+
+            // loop modules
+            foreach(self::getModules() as $module => $configuration) {
+                foreach ($schemas as $schema) {
+                    $hook_filename = "$schema/$filename";
+                    if ($template_file = self::_isHookFileExists($module, $hook_filename, $base_paths, $extension)) {
+                        if ($schema == 'pre') {
+                            $pre_content .= Registry::get('template')->render($template_file, $context);
+                        } elseif ($schema == 'override') {
+                            $override_content = Registry::get('template')->render($template_file, $context);
+                        } elseif ($schema == 'post') {
+                            $post_content .= Registry::get('template')->render($template_file, $context);
+                        }
+                    }
+                }
+            }
+
+            // display contents
+            echo $pre_content;
+            if ($override_content) {
+                echo $override_content;
+            } else {
+                $template_class->$method_name($context, $blocks);
+            }
+            echo $post_content;
+            // end display
+        }
     }
 }
